@@ -1,0 +1,13 @@
+# Sublime Text
+*.sublime-*
+
+# see config.yaml.example
+*config.yaml
+
+db/*
+*.db
+
+# Python files
+*venv*
+*__pycache__/*
+*.pyc
