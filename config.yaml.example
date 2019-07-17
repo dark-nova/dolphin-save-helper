@@ -1,6 +1,6 @@
 # Rename this file to config.yaml to use the script.
 
 # basedir goes to the root of dolphin-emu
-basedir: '~/.local/share/dophin-emu/'
+base_dir: '~/.local/share/dophin-emu/'
 # change savedir appropriate to your settings
-savedir: '~/GCN/saves'
+save_dir: '~/GCN/saves'
