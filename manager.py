@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(
     )
 parser.add_argument(
     'sub_dir',
-    help='The subdirectory containing .gci files, excluding your savedir root',
+    help='The subdirectory containing .gci files, excluding your save dir root',
     )
 parser.add_argument(
     '--slot', '-s',
@@ -25,7 +25,9 @@ parser.add_argument(
     type=str.upper
     )
 
-gci_numbers = re.compile(r'(_[0-9]{2})?\.gci', re.I)
+GCI_NUMBERS = re.compile(r'(_[0-9]{2})?\.gci', re.I)
+
+GCI_GLOB = '*.gci'
 
 
 def convert_check_path(directory):
@@ -37,11 +39,24 @@ def convert_check_path(directory):
 
 
 def check_file_conflicts(sub_dir, base_dir, card_slot):
-    success = []
+    non_empty = False
+    failure = []
     card_dir = base_dir / card_slot
-    for file in sub_dir.glob('*.gci'):
-        pattern = card_dir / gci_numbers.sub('*.gci', file.name)
-        pass
+    for file in sub_dir.glob(GCI_GLOB):
+        non_empty = True
+        # There's at least 1 match: do not do anything;
+        # let the user handle this
+        if list(card_dir.glob(GCI_NUMBERS.sub(GCI_GLOB, file.name))):
+            failure.append(file.name)
+
+    if non_empty and not failure:
+        return True
+    elif not non_empty:
+        raise Exception(f'{sub_dir} doesn\'t have any .gci files')
+    else:
+        raise Exception(
+            f'You have the following file conflicts: {" ".join(failure)}'
+            )
 
 
 if __name__ == '__main__':
