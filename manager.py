@@ -15,7 +15,10 @@ parser = argparse.ArgumentParser(
     )
 parser.add_argument(
     'sub_dir',
-    help='The sub directory containing .gci files, excluding your save dir root',
+    help=(
+        'The sub directory containing .gci files, '
+        'excluding your save dir root'
+        ),
     )
 parser.add_argument(
     '--slot', '-s',
@@ -72,10 +75,16 @@ def check_file_conflicts(sub_dir: str, base_dir: str, card_slot: str):
     card_dir = base_dir / card_slot
     for file in sub_dir.glob(GCI_GLOB):
         non_empty = True
-        # There's at least 1 match: do not do anything;
-        # let the user handle this
-        if list(card_dir.glob(GCI_NUMBERS.sub(GCI_GLOB, file.name))):
-            failure.append(file.name)
+        for g in card_dir.glob(GCI_NUMBERS.sub(GCI_GLOB, file.name)):
+            # If there are file conflicts, check if they are symlinks.
+            # Remove "valid" symlinks if possible.
+            # Invalid files:
+            # - regular files
+            # - symlinks pointing to the same files as the ones in sub_dir
+            if g.is_symlink() and g.name != file.name:
+                g.unlink()
+            else:
+                failure.append(g.name)
 
     if non_empty and not failure:
         return True
