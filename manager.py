@@ -55,7 +55,12 @@ def convert_check_path(directory: str):
 
 
 def check_file_conflicts(sub_dir: str, base_dir: str, card_slot: str):
-    """Checks for file conflicts.
+    """Checks for file conflicts. If conflicts exist, abort script.
+    Otherwise, remove existing, valid symlinks.
+
+    Conflicting files:
+    - regular files with same or similar name
+    - symlinks pointing to the same files as the ones in sub_dir
 
     Args:
         sub_dir (str): the sub dir containing your saves elsewhere
@@ -76,11 +81,6 @@ def check_file_conflicts(sub_dir: str, base_dir: str, card_slot: str):
     for file in sub_dir.glob(GCI_GLOB):
         non_empty = True
         for g in card_dir.glob(GCI_NUMBERS.sub(GCI_GLOB, file.name)):
-            # If there are file conflicts, check if they are symlinks.
-            # Remove "valid" symlinks if possible.
-            # Invalid files:
-            # - regular files
-            # - symlinks pointing to the same files as the ones in sub_dir
             if g.is_symlink() and g.name != file.name:
                 g.unlink()
             else:
