@@ -96,6 +96,31 @@ def check_file_conflicts(sub_dir: str, base_dir: str, card_slot: str):
             )
 
 
+def link_files(sub_dir: str, base_dir: str, card_slot: str):
+    """Link files from `sub_dir` into `base_dir` / `card_slot`.
+    If `card_slot` doesn't exist, create it.
+
+    Args:
+        sub_dir (str): the sub dir containing your saves elsewhere
+        base_dir (str): the base dir created and used by Dolphin Emulator
+        card_slot (str): either 'Card A' or 'Card B'
+
+    Returns:
+        bool: True
+
+    """
+    card_dir = base_dir / card_slot
+    if not card_dir.exists():
+        card_dir.mkdir(parents=True)
+
+    for file in sub_dir.glob(GCI_GLOB):
+        current = card_dir / file.name
+        current.symlink_to(file)
+        print(f'Linked {file.name}!')
+
+    return True
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     with open('config.yaml', 'r') as f:
@@ -107,5 +132,5 @@ if __name__ == '__main__':
     sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
     
-    if not check_file_conflicts(sub_dir, base_dir, card_slot):
-        pass
+    if check_file_conflicts(sub_dir, base_dir, card_slot):
+        link_files(sub_dir, base_dir, card_slot)
