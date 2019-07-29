@@ -1,8 +1,10 @@
 # Rename this file to config.yaml to use the script.
 
-# basedir goes to the root of dolphin-emu
+# base_dir goes to the root of dolphin-emu
 # Linux: ~/.local/share/dolphin-emu/
 # Android: /sdcard/dolphin-emu/
 base_dir: '~/.local/share/dolphin-emu/'
-# change savedir appropriate to your settings
+# change save_dir appropriate to your settings
 save_dir: '~/GCN/saves'
+# regions as defined by Dolphin: EUR, JAP, USA
+region: 'USA'
