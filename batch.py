@@ -21,7 +21,7 @@ def batch_region(action, base_dir: str, region: str, card_slot: str):
         regular files exist
 
     """
-    card_dir = Path(base_dir) / region / card_slot
+    card_dir = Path(base_dir) / 'GC' / region / card_slot
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
