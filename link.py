@@ -29,3 +29,24 @@ def link_files(sub_dir: str, base_dir: str, card_slot: str, region: str):
         print(f'Linked {file.name}!')
 
     return True
+
+
+def unlink_file(file: pathlib.Path):
+    """Unlink one file, given a `file`.
+
+    Compare with `link_files` (plural); to be used with batch.
+
+    Args:
+        file (pathlib.Path): the file to attempt to delete
+
+    Returns:
+        bool: True if successful; False otherwise
+
+    """
+    try:
+        file.unlink()
+        print(f'Successfully unlinked {file.name}!')
+        return True
+    except:
+        print(f'Could not unlink {file.name}.')
+        return False
