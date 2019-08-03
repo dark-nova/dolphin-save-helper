@@ -22,10 +22,13 @@ def batch_region(action, base_dir: str, region: str, card_slot: str):
 
     """
     card_dir = Path(base_dir) / 'GC' / region / card_slot
+    if not card_dir.exists():
+        card_dir.mkdir(parents=True)
+
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
-            action(base_dir, region, card_slot)
+            action(base_dir, region, card_dir)
         else:
             failure.append(file.name)
 
