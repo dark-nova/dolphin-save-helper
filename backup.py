@@ -60,3 +60,33 @@ def backup(file: pathlib.Path, max_backup: int = 1):
             oldest = current
 
     return copy(resolved, oldest)    
+
+
+def restore(file: pathlib.Path, backup_number: int):
+    """Restores a backup given a `backup_number` to 
+    the card file
+
+    Not to be used with batch.
+
+    Args:
+        file (pathlib.Path): the target file to replace/restore
+        backup_number (int): the specific backup to restore
+
+    Returns:
+        bool: True if successful
+
+    Raises:
+        Exception: if the backup directory doesn't exist 
+
+    """
+    resolved = file.resolve()
+    backup_dir = resolved.parent / 'backups'
+    if not backup_dir.exists():
+        backup_dir.mkdir(parents=True)
+        raise Exception('Backup directory doesn\'t exist.')
+        
+    backup = backup_dir / f'{file.name}-{backup_number}'
+    if not backup.exists():
+        raise Exception(f'Backup {backup.name} doesn\'t exist in {backup_dir}.')
+
+    return copy(backup, resolved)
