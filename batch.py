@@ -28,13 +28,14 @@ def batch_region(action, base_dir: str, region: str, card_slot: str):
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
-            action(file)
+            if not action(file):
+                failure.append(file.name)
         else:
             failure.append(file.name)
 
     if failure:
         raise Exception(
-            f"""You have regular files to manually delete or move:
+            f"""You have The following file conflicts:
             {' '.join(failure)}"""
             )
     else:
