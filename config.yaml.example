@@ -8,3 +8,5 @@ base_dir: '~/.local/share/dolphin-emu/'
 save_dir: '~/GCN/saves'
 # regions as defined by Dolphin: EUR, JAP, USA
 region: 'USA'
+# maximum number of circular backups
+max_backup: 5
