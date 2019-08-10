@@ -14,6 +14,7 @@ def copy(src: pathlib.Path, dest: pathlib.Path):
 
     """
     shutil.copy(str(src), str(dest))
+    print(f'Backed up {src.name} to {dest}!')
     return True
 
 
