@@ -2,12 +2,12 @@ import shutil
 from pathlib import Path
 
 
-def copy(src: pathlib.Path, dest: pathlib.Path):
+def copy(src: Path, dest: Path):
     """Copy backup from `src` to `dest`.
 
     Args:
-        src (pathlib.Path): the source to copy from
-        dest (pathlib.Path): the destination to copy to
+        src (Path): the source to copy from
+        dest (Path): the destination to copy to
 
     Returns:
         bool: True if successful
@@ -18,7 +18,7 @@ def copy(src: pathlib.Path, dest: pathlib.Path):
     return True
 
 
-def backup(file: pathlib.Path, max_backup: int = 1):
+def backup(file: Path, max_backup: int = 1):
     """Backs up a file, with `max_backup` indicating
     how many circular copies should be kept.
 
@@ -30,7 +30,7 @@ def backup(file: pathlib.Path, max_backup: int = 1):
     Backups are "{file.name}-{backup_number}".
 
     Args:
-        file (pathlib.Path): the file to attempt to back up
+        file (Path): the file to attempt to back up
         max_backup (int, optional): maximum circular backup count;
             defaults to 1; should always be >= 1
 
@@ -52,7 +52,7 @@ def backup(file: pathlib.Path, max_backup: int = 1):
     oldest = backup_dir / f'{file.name}-1'
 
     for i in range(max_backup):
-        current = backup_dir / f'{file.name}-{i}'
+        current = backup_dir / f'{file.name}-{i+1}'
         if not current.exists():
             return copy(resolved, current)
         elif current.stat().st_mtime < oldest_time:
@@ -62,14 +62,14 @@ def backup(file: pathlib.Path, max_backup: int = 1):
     return copy(resolved, oldest)    
 
 
-def restore(file: pathlib.Path, backup_number: int):
+def restore(file: Path, backup_number: int):
     """Restores a backup given a `backup_number` to 
     the card file
 
     Not to be used with batch.
 
     Args:
-        file (pathlib.Path): the target file to replace/restore
+        file (Path): the target file to replace/restore
         backup_number (int): the specific backup to restore
 
     Returns:

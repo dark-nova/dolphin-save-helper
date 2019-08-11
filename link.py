@@ -39,13 +39,13 @@ def link_files(sub_dir: str, base_dir: str, card_slot: str, region: str,
     return True
 
 
-def unlink_file(file: pathlib.Path):
+def unlink_file(file: Path):
     """Unlink one file, given a `file`.
 
     Compare with `link_files` (plural); to be used with batch.
 
     Args:
-        file (pathlib.Path): the file to attempt to delete
+        file (Path): the file to attempt to delete
 
     Returns:
         bool: True if successful; False otherwise
