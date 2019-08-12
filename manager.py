@@ -45,7 +45,7 @@ parser_link.add_argument(
         ),
     )
 parser_link.add_argument(
-    '--file',
+    '--file', '-f',
     help='One file to link'
     )
 
@@ -62,7 +62,7 @@ parser_restore.add_argument(
         ),
     )
 parser_restore.add_argument(
-    '--file',
+    '--file', '-f',
     help='One file to restore'
     )
 
@@ -78,7 +78,7 @@ def add_batch(parser: argparse.ArgumentParser):
     """
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        '--file',
+        '--file', '-f',
         help='One file, instead of batch'
         )
     group.add_argument(
@@ -153,6 +153,8 @@ def convert_check_path(directory: str):
         Exception: if the directory doesn't exist or isn't a directory
 
     """
+    # Since `expanduser` doesn't care if '~' isn't present,
+    # use it unconditionally
     directory = Path(directory).expanduser()
     if directory.exists() and directory.is_dir():
         return directory
@@ -207,7 +209,9 @@ def check_file_conflicts(
         raise Exception(f'{sub_dir} doesn\'t have any .gci files')
     else:
         raise Exception(
-            f'You have the following file conflicts: {" ".join(failure)}'
+            f"""You have the following file conflicts: {" ".join(failure)}
+            Please check and move/delete these files.
+            """
             )
 
 
@@ -232,8 +236,8 @@ def check_file_exists(sub_dir: Path, file: Path):
     else:
         save_file = sub_dir / file
         if not save_file.exists():
-            raise Exception(f"""
-                {save_file} doesn\'t exist.
+            raise Exception(
+                f"""{save_file} doesn\'t exist.
                 Please check the filename and/or location.
                 """
                 )
@@ -249,8 +253,6 @@ if __name__ == '__main__':
         region = check_region(conf['region'])
     else:
         region = check_region(args.region)
-    # Since `expanduser` doesn't care if '~' isn't present,
-    # use it unconditionally
     base_dir = convert_check_path(conf['base_dir'])
     save_dir = convert_check_path(conf['save_dir'])
     sub_dir = convert_check_path(save_dir / args.sub_dir)
@@ -265,4 +267,6 @@ if __name__ == '__main__':
         if check_file_conflicts(
             sub_dir, base_dir, card_slot, region, file=file
             ):
+            if file:
+                link.link_file(sub_dir, base_dir, card_slot, region, file)
             link.link_files(sub_dir, base_dir, card_slot, region)
