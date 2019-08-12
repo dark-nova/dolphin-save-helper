@@ -293,5 +293,26 @@ if __name__ == '__main__':
     elif args.subcommand == 'unlink':
         if file:
             link.unlink_file(file)
-        elif args.batch:
-            batch.batch(link.unlink_file, card_dir)
+        else:
+            function = link.unlink_file
+    elif args.subcommand == 'backup':
+        if file:
+            backup.backup(file, max_backup=max_backup)
+        else:
+            function = backup.backup
+    else: # elif args.subcommand == 'restore':
+        pass
+
+    try:
+        if args.batch:
+            batch.batch(function, card_dir)
+        elif args.batch_region:
+            batch.batch_region(
+                function, base_dir, region, max_backup=max_backup
+                )
+        else:
+            batch.batch_all(
+                function, base_dir, max_backup=max_backup
+                )
+    except AttributeError:
+        pass
