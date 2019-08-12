@@ -4,8 +4,11 @@ from pathlib import Path
 
 import yaml
 
+import backup
+import batch
+import link
 
-# $ python manager.py <save sub_dir> <slot>
+
 parser = argparse.ArgumentParser(
     description="""
         A simple save manager for Dolphin Emulator.
@@ -14,19 +17,95 @@ parser = argparse.ArgumentParser(
         """
     )
 parser.add_argument(
-    'sub_dir',
-    help=(
-        'The sub directory containing .gci files, '
-        'excluding your save dir root'
-        ),
-    )
-parser.add_argument(
     '--slot', '-s',
     choices=['A', 'B'],
     default='A',
     help='Destination slot, A or B',
     type=str.upper
     )
+parser.add_argument(
+    '--region', '-r',
+    choices=['E', 'EUR', 'J', 'JAP', 'U', 'USA'],
+    help='Region, by first letter or three letters only',
+    type=str.upper
+    )
+
+subparser = parser.add_subparsers(
+    help='subcommand help',
+    required=True,
+    dest='subcommand'
+    )
+
+parser_link = subparser.add_parser('link', help='link help')
+parser_link.add_argument(
+    'sub_dir',
+    help=(
+        'The sub directory containing .gci files, '
+        'excluding your save dir root'
+        ),
+    )
+parser_link.add_argument(
+    '--file',
+    help='One file to link'
+    )
+
+parser_unlink = subparser.add_parser('unlink', help='unlink help')
+
+parser_backup = subparser.add_parser('backup', help='backup help')
+
+parser_restore = subparser.add_parser('restore', help='restore help')
+parser_restore.add_argument(
+    'sub_dir',
+    help=(
+        'The sub directory containing .gci files, '
+        'excluding your save dir root'
+        ),
+    )
+parser_restore.add_argument(
+    '--file',
+    help='One file to restore'
+    )
+
+def add_batch(parser: argparse.ArgumentParser):
+    """Add batch flags to command `parser`s.
+
+    Args:
+        parser (argparse.ArgumentParser): the parser to add the flags
+
+    Returns:
+        bool: True
+
+    """
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        '--file',
+        help='One file, instead of batch'
+        )
+    group.add_argument(
+        '--batch',
+        action='store_const',
+        const=1,
+        help='Batch operation on one region and one slot'
+        )
+    group.add_argument(
+        '--batch-region',
+        action='store_const',
+        const=1,
+        help='Batch operation on one region and both slots'
+        )
+    group.add_argument(
+        '--batch-all',
+        action='store_const',
+        const=1,
+        help='Batch operation on all regions and both slots'
+        )
+
+    return True
+
+
+add_batch(parser_unlink)
+add_batch(parser_backup)
+
 
 GCI_NUMBERS = re.compile(r'(_[0-9]{2})?\.gci', re.I)
 
@@ -76,7 +155,8 @@ def convert_check_path(directory: str):
 
 
 def check_file_conflicts(
-    sub_dir: str, base_dir: str, card_slot: str, region: str
+    sub_dir: Path, base_dir: Path, card_slot: str, region: str,
+    file: Path = None
     ):
     """Checks for file conflicts. If conflicts exist, abort script.
     Otherwise, remove existing, valid symlinks.
@@ -86,10 +166,11 @@ def check_file_conflicts(
     - symlinks pointing to the same files as the ones in sub_dir
 
     Args:
-        sub_dir (str): the sub dir containing your saves elsewhere
-        base_dir (str): the base dir created and used by Dolphin Emulator
+        sub_dir (Path): the sub dir containing your saves elsewhere
+        base_dir (Path): the base dir created and used by Dolphin Emulator
         card_slot (str): either 'Card A' or 'Card B'
         region (str): 'EUR', 'JAP', 'USA'
+        file (Path, optional): single file to check; defaults to None
 
     Returns:
         bool: True, if files exist in `sub_dir` but not in
@@ -102,7 +183,11 @@ def check_file_conflicts(
     non_empty = False
     failure = []
     card_dir = base_dir / 'GC' / region / card_slot
-    for file in sub_dir.glob(GCI_GLOB):
+    if file:
+        files = [file]
+    else:
+        files = sub_dir.glob(GCI_GLOB)
+    for f in files:
         non_empty = True
         for g in card_dir.glob(GCI_NUMBERS.sub(GCI_GLOB, file.name)):
             if g.is_symlink() and g.name != file.name:
@@ -124,13 +209,29 @@ if __name__ == '__main__':
     args = parser.parse_args()
     with open('config.yaml', 'r') as f:
         conf = yaml.load(f, Loader=yaml.Loader)
+    if not args.region:
+        region = check_region(conf['region'])
+    elif args.region == 'E':
+        region = 'EUR'
+    elif args.region == 'J':
+        region = 'JAP'
+    elif args.region == 'U':
+        region = 'USA'
+    else:
+        region = args.region
     # Since `expanduser` doesn't care if '~' isn't present,
     # use it unconditionally
-    region = check_region(conf['region'])
     base_dir = convert_check_path(conf['base_dir'])
     save_dir = convert_check_path(conf['save_dir'])
     sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
+    if args.file:
+        file = args.file # handle this
+    else:
+        file = None
     
-    if check_file_conflicts(sub_dir, base_dir, card_slot, region):
-        link_files(sub_dir, base_dir, card_slot, region)
+    if args.subcommand == 'link':
+        if check_file_conflicts(
+            sub_dir, base_dir, card_slot, region, file=file
+            ):
+            link.link_files(sub_dir, base_dir, card_slot, region)
