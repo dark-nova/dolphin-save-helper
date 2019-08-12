@@ -37,12 +37,12 @@ $ python manager.py link -h
 usage: manager.py link [-h] [--file FILE] sub_dir
 
 positional arguments:
-  sub_dir      The sub directory containing .gci files, excluding your save
-               dir root
+  sub_dir               The sub directory containing .gci files, excluding
+                        your save dir root
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --file FILE  One file to link
+  -h, --help            show this help message and exit
+  --file FILE, -f FILE  One file to link
 ```
 
 ⚠ Note that using the `link` subcommand will also automatically backup the file to link.
@@ -54,26 +54,25 @@ usage: manager.py unlink [-h]
                          (--file FILE | --batch | --batch-region | --batch-all)
 
 optional arguments:
-  -h, --help      show this help message and exit
-  --file FILE     One file, instead of batch
-  --batch         Batch operation on one region and one slot
-  --batch-region  Batch operation on one region and both slots
-  --batch-all     Batch operation on all regions and both slots
-
+  -h, --help            show this help message and exit
+  --file FILE, -f FILE  One file, instead of batch
+  --batch               Batch operation on one region and one slot
+  --batch-region        Batch operation on one region and both slots
+  --batch-all           Batch operation on all regions and both slots
 ```
 
 ### [Backup](backup.py)
 ```
 $ python manager.py backup -h
 usage: manager.py backup [-h]
-                         [--file FILE | --batch | --batch-region | --batch-all]
+                         (--file FILE | --batch | --batch-region | --batch-all)
 
 optional arguments:
-  -h, --help      show this help message and exit
-  --file FILE     One file to backup
-  --batch         Batch operation on one region and one slot
-  --batch-region  Batch operation on one region and both slots
-  --batch-all     Batch operation on all regions and both slots
+  -h, --help            show this help message and exit
+  --file FILE, -f FILE  One file, instead of batch
+  --batch               Batch operation on one region and one slot
+  --batch-region        Batch operation on one region and both slots
+  --batch-all           Batch operation on all regions and both slots
 ```
 
 ### [Restore](backup.py)
@@ -82,12 +81,12 @@ $ python manager.py restore -h
 usage: manager.py restore [-h] [--file FILE] sub_dir
 
 positional arguments:
-  sub_dir      The sub directory containing .gci files, excluding your save
-               dir root
+  sub_dir               The sub directory containing .gci files, excluding
+                        your save dir root
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --file FILE  One file to restore
+  -h, --help            show this help message and exit
+  --file FILE, -f FILE  One file to restore
 ```
 
 ⚠ Note that although this program attempts to manipulate files in a safe manner (using symlinks, for example), `restore` is a destructive procedure that overwrites the save file with the backup.
