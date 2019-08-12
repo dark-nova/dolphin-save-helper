@@ -65,6 +65,10 @@ parser_restore.add_argument(
     '--file', '-f',
     help='One file to restore'
     )
+parser_restore.add_argument(
+    '--number', '-n',
+    help='Backup number to restore'
+    )
 
 def add_batch(parser: argparse.ArgumentParser):
     """Add batch flags to command `parser`s.
@@ -301,7 +305,7 @@ if __name__ == '__main__':
         else:
             function = backup.backup
     else: # elif args.subcommand == 'restore':
-        pass
+        backup.restore(file, args.number)
 
     try:
         if args.batch:
