@@ -69,7 +69,7 @@ def link_files(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
 def unlink_file(file: Path):
     """Unlink one file, given a `file`.
 
-    Compare with `link_files` (plural); to be used with batch.
+    Compare with `link_files` (plural); can be used with batch.
 
     Args:
         file (Path): the file to attempt to delete
