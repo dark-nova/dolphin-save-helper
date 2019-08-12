@@ -205,6 +205,36 @@ def check_file_conflicts(
             )
 
 
+def check_file_exists(sub_dir: Path, file: Path):
+    """Check if the supplied `file` arg exists.
+
+    Args:
+        sub_dir (Path): the fully qualified subdirectory
+        file (Path): the file to check
+
+    Returns:
+        Path: if valid, the file
+
+    Raises:
+        Exception: if save file doesn't exist or is in the wrong place
+
+    """
+    if file.resolve().parent != sub_dir:
+        raise Exception(f'{file} isn\'t in {sub_dir}')
+    if file.exists():
+        return file
+    else:
+        save_file = sub_dir / file
+        if not save_file.exists():
+            raise Exception(f"""
+                {save_file} doesn\'t exist.
+                Please check the filename and/or location.
+                """
+                )
+
+        return save_file
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     with open('config.yaml', 'r') as f:
@@ -225,11 +255,12 @@ if __name__ == '__main__':
     save_dir = convert_check_path(conf['save_dir'])
     sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
+
     if args.file:
-        file = args.file # handle this
+        file = check_file_exists(sub_dir, Path(args.file))
     else:
         file = None
-    
+
     if args.subcommand == 'link':
         if check_file_conflicts(
             sub_dir, base_dir, card_slot, region, file=file

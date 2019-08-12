@@ -25,27 +25,11 @@ def link_file(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
     Returns:
         bool: True if successful
 
-    Raises:
-        Exception: if save file doesn't exist or is in the wrong place
-
     """
     card_dir = base_dir / 'GC' / region / card_slot
     if not card_dir.exists():
         print(f'{card_dir.name} doesn\'t exist! Creating...')
         card_dir.mkdir(parents=True)
-
-    if file.resolve().parent != sub_dir:
-        raise Exception(f'{file} isn\'t in {sub_dir}')
-    if file.exists():
-        save_file = file
-    else:
-        save_file = sub_dir / file
-        if not save_file.exists():
-            raise Exception(f"""
-                {save_file} doesn\'t exist.
-                Please check the filename and/or location.
-                """
-                )
 
     linked = card_dir / file.name
     linked.symlink_to(save_file)
