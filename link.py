@@ -3,8 +3,7 @@ from pathlib import Path
 import backup
 
 
-def link_file(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
-    file: Path, max_backup: int = 1):
+def link_file(sub_dir: Path, card_dir: Path, file: Path, max_backup: int = 1):
     """Link one file from `sub_dir` into `base_dir` / `card_slot`.
     If `card_slot` doesn't exist, create it.
 
@@ -15,9 +14,7 @@ def link_file(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
 
     Args:
         sub_dir (str): the sub dir containing your saves elsewhere
-        base_dir (str): the base dir created and used by Dolphin Emulator
-        card_slot (str): either 'Card A' or 'Card B'
-        region (str): 'EUR', 'JAP', 'USA'
+        card_dir (Path): base_dir / 'GC' / region / card_slot
         file (Path): the file
         max_backup (int, optional): maximum circular backup count;
             defaults to 1; should always be >= 1
@@ -26,11 +23,6 @@ def link_file(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
         bool: True if successful
 
     """
-    card_dir = base_dir / 'GC' / region / card_slot
-    if not card_dir.exists():
-        print(f'{card_dir.name} doesn\'t exist! Creating...')
-        card_dir.mkdir(parents=True)
-
     linked = card_dir / file.name
     linked.symlink_to(save_file)
     print(f'Linked {save_file.name}!')
@@ -39,17 +31,14 @@ def link_file(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
     return True
 
 
-def link_files(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
-    max_backup: int = 1):
+def link_files(sub_dir: Path, card_dir: Path, max_backup: int = 1):
     """Link files from `sub_dir` into `base_dir` / `card_slot`.
 
     Calls `link_file` - check docstring for more information.
 
     Args:
         sub_dir (Path): the sub dir containing your saves elsewhere
-        base_dir (Path): the base dir created and used by Dolphin Emulator
-        card_slot (str): either 'Card A' or 'Card B'
-        region (str): 'EUR', 'JAP', 'USA'
+        card_dir (Path): base_dir / 'GC' / region / card_slot
         max_backup (int, optional): maximum circular backup count;
             defaults to 1; should always be >= 1
 
@@ -61,7 +50,7 @@ def link_files(sub_dir: Path, base_dir: Path, card_slot: str, region: str,
 
     """
     for file in sub_dir.glob(GCI_GLOB):
-        link_file(sub_dir, base_dir, card_slot, region, file, max_backup)
+        link_file(sub_dir, card_dir, file, max_backup)
 
     return True
 

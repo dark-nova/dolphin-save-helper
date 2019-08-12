@@ -257,8 +257,19 @@ if __name__ == '__main__':
     save_dir = convert_check_path(conf['save_dir'])
     sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
+    card_dir = base_dir / 'GC' / region / card_slot
 
-    if args.file:
+    if not card_dir.exists():
+        print(f'{card_dir.name} doesn\'t exist! Creating...')
+        card_dir.mkdir(parents=True)
+
+
+    # If sub_dir is checked instead, there is a real possibility
+    # of a regular save file being deleted via `unlink`. Plus,
+    # the target of unlinking is the symlinked files.
+    if args.file and args.subcommand == 'unlink':
+        file = check_file_exists(card_dir, Path(args.file))
+    elif args.file:
         file = check_file_exists(sub_dir, Path(args.file))
     else:
         file = None
@@ -268,5 +279,11 @@ if __name__ == '__main__':
             sub_dir, base_dir, card_slot, region, file=file
             ):
             if file:
-                link.link_file(sub_dir, base_dir, card_slot, region, file)
-            link.link_files(sub_dir, base_dir, card_slot, region)
+                link.link_file(sub_dir, card_dir, file)
+            else:
+                link.link_files(sub_dir, card_dir)
+    elif args.subcommand == 'unlink':
+        if file:
+            link.unlink_file(file)
+        elif args.batch:
+            batch.batch(link.unlink_file, card_dir)

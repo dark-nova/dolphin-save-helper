@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def batch(action, base_dir: str, region: str, card_slot: str):
+def batch(action, card_dir: Path):
     """Performs an `action` repeatedly across a given `region` and
     `card_slot`.
 
@@ -9,9 +9,7 @@ def batch(action, base_dir: str, region: str, card_slot: str):
 
     Args:
         action (function): the function to run in batch
-        base_dir (str): the base dir created and used by Dolphin Emulator
-        region (str): 'EUR', 'JAP', 'USA'
-        card_slot (str): either 'Card A' or 'Card B'
+        card_dir (Path): base_dir / 'GC' / region / card_slot
 
     Returns:
         bool: True
@@ -21,10 +19,6 @@ def batch(action, base_dir: str, region: str, card_slot: str):
         regular files exist
 
     """
-    card_dir = Path(base_dir) / 'GC' / region / card_slot
-    if not card_dir.exists():
-        card_dir.mkdir(parents=True)
-
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
@@ -62,7 +56,8 @@ def batch_region(action, base_dir: str, region: str):
 
     """
     for slot in ['A', 'B']:
-        batch(action, base_dir, region, f'Card {slot}')
+        card_dir = Path(base_dir) / 'GC' / region / f'Card {slot}'
+        batch(action, card_dir)
 
     return True
 
