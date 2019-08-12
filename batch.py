@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def batch_region(action, base_dir: str, region: str, card_slot: str):
+def batch(action, base_dir: str, region: str, card_slot: str):
     """Performs an `action` repeatedly across a given `region` and
     `card_slot`.
 
@@ -42,7 +42,7 @@ def batch_region(action, base_dir: str, region: str, card_slot: str):
         return True
 
 
-def batch_region_all(action, base_dir: str, region: str):
+def batch_region(action, base_dir: str, region: str):
     """Performs an `action` repeatedly across a given `region`.
     Both card slots 'A' and 'B' are checked.
 
@@ -62,7 +62,7 @@ def batch_region_all(action, base_dir: str, region: str):
 
     """
     for slot in ['A', 'B']:
-        batch_region(action, base_dir, region, f'Card {slot}')
+        batch(action, base_dir, region, f'Card {slot}')
 
     return True
 
@@ -85,6 +85,6 @@ def batch_all(action, base_dir: str):
 
     """
     for region in ['EUR', 'JAP', 'USA']:
-        batch_region_all(action, base_dir, region)
+        batch_region(action, base_dir, region)
 
     return True
