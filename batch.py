@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def batch(action, card_dir: Path):
+def batch(action, card_dir: Path, max_backup: int = 1):
     """Performs an `action` repeatedly across a given `region` and
     `card_slot`.
 
@@ -10,6 +10,8 @@ def batch(action, card_dir: Path):
     Args:
         action (function): the function to run in batch
         card_dir (Path): base_dir / 'GC' / region / card_slot
+        max_backup (int, optional): maximum circular backup count;
+            defaults to 1; should always be >= 1
 
     Returns:
         bool: True
@@ -22,7 +24,7 @@ def batch(action, card_dir: Path):
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
-            if not action(file):
+            if not action(file, max_backup: int = 1):
                 failure.append(file.name)
         else:
             failure.append(file.name)
@@ -36,7 +38,7 @@ def batch(action, card_dir: Path):
         return True
 
 
-def batch_region(action, base_dir: str, region: str):
+def batch_region(action, base_dir: str, region: str, max_backup: int = 1):
     """Performs an `action` repeatedly across a given `region`.
     Both card slots 'A' and 'B' are checked.
 
@@ -46,6 +48,8 @@ def batch_region(action, base_dir: str, region: str):
         action (function): the function to run in batch
         base_dir (str): the base dir created and used by Dolphin Emulator
         region (str): 'EUR', 'JAP', 'USA'
+        max_backup (int, optional): maximum circular backup count;
+            defaults to 1; should always be >= 1
 
     Returns:
         bool: True
@@ -62,7 +66,7 @@ def batch_region(action, base_dir: str, region: str):
     return True
 
 
-def batch_all(action, base_dir: str):
+def batch_all(action, base_dir: str, max_backup: int = 1):
     """Performs an `action` on all regions and card slots.
 
     Before using this function, ensure all parameters are valid.
@@ -70,6 +74,8 @@ def batch_all(action, base_dir: str):
     Args:
         action (function): the function to run in batch
         base_dir (str): the base dir created and used by Dolphin Emulator
+        max_backup (int, optional): maximum circular backup count;
+            defaults to 1; should always be >= 1
 
     Returns:
         bool: True

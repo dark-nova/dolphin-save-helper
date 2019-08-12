@@ -258,6 +258,7 @@ if __name__ == '__main__':
     sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
     card_dir = base_dir / 'GC' / region / card_slot
+    max_backup = conf['max_backup']
 
     try:
         if args.batch_region or args.batch_all:
@@ -286,9 +287,9 @@ if __name__ == '__main__':
             sub_dir, base_dir, card_slot, region, file=file
             ):
             if file:
-                link.link_file(sub_dir, card_dir, file)
+                link.link_file(sub_dir, card_dir, file, max_backup=max_backup)
             else:
-                link.link_files(sub_dir, card_dir)
+                link.link_files(sub_dir, card_dir, max_backup=max_backup)
     elif args.subcommand == 'unlink':
         if file:
             link.unlink_file(file)

@@ -55,13 +55,15 @@ def link_files(sub_dir: Path, card_dir: Path, max_backup: int = 1):
     return True
 
 
-def unlink_file(file: Path):
+def unlink_file(file: Path, max_backup: int = 1):
     """Unlink one file, given a `file`.
 
     Compare with `link_files` (plural); can be used with batch.
 
     Args:
         file (Path): the file to attempt to delete
+        max_backup (int, optional): unused in this function; used for
+            consistency when batch calling functions
 
     Returns:
         bool: True if successful; False otherwise
