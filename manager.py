@@ -129,6 +129,12 @@ def check_region(region: str):
     """
     if region == 'EUR' or region == 'JAP' or region == 'USA':
         return region
+    elif region == 'E':
+        return 'EUR'
+    elif region == 'J':
+        return 'JAP'
+    elif region == 'U':
+        return 'USA'
     else:
         raise Exception(f'{region} is an invalid region!')
 
@@ -241,14 +247,8 @@ if __name__ == '__main__':
         conf = yaml.load(f, Loader=yaml.Loader)
     if not args.region:
         region = check_region(conf['region'])
-    elif args.region == 'E':
-        region = 'EUR'
-    elif args.region == 'J':
-        region = 'JAP'
-    elif args.region == 'U':
-        region = 'USA'
     else:
-        region = args.region
+        region = check_region(args.region)
     # Since `expanduser` doesn't care if '~' isn't present,
     # use it unconditionally
     base_dir = convert_check_path(conf['base_dir'])
