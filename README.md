@@ -102,4 +102,4 @@ You can change `max_backup` to a number of your choice. If it's invalid, the pro
 
 ## Disclaimer
 
-This project is not affiliated or endorsed by Dolphin Emulator or Nintendo. See [LICENSE](LICENSE) for additional detail.
+This project is not affiliated with or endorsed by Dolphin Emulator or Nintendo. See [LICENSE](LICENSE) for additional detail.
