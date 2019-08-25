@@ -81,7 +81,15 @@ def add_batch(parser: argparse.ArgumentParser):
 
     """
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
+    file_group = group.add_argument_group()
+    file_group.add_argument(
+        'sub_dir',
+        help=(
+            'The sub directory containing .gci files, '
+            'excluding your save dir root'
+            ),
+        )
+    file_group.add_argument(
         '--file', '-f',
         help='One file, instead of batch'
         )
@@ -259,7 +267,8 @@ if __name__ == '__main__':
         region = check_region(args.region)
     base_dir = convert_check_path(conf['base_dir'])
     save_dir = convert_check_path(conf['save_dir'])
-    sub_dir = convert_check_path(save_dir / args.sub_dir)
+    if not (args.batch or args.batch_region or args.batch_all):
+        sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
     card_dir = base_dir / 'GC' / region / card_slot
     max_backup = conf['max_backup']

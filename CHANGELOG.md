@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.1.1] - 2019-08-25
 ### Fixed
 - Syntax issue in [`batch.py`](batch.py)
+- `AttributeError`: handling batch operations with omitted `sub_dir`
 
 ## [1.1] - 2019-08-12
 ### Added
