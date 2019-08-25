@@ -24,7 +24,7 @@ def batch(action, card_dir: Path, max_backup: int = 1):
     failure = []
     for file in card_dir.glob('*.gci'):
         if file.is_symlink():
-            if not action(file, max_backup: int = 1):
+            if not action(file, max_backup):
                 failure.append(file.name)
         else:
             failure.append(file.name)
