@@ -80,8 +80,13 @@ def add_batch(parser: argparse.ArgumentParser):
         bool: True
 
     """
-    group = parser.add_mutually_exclusive_group(required=True)
-    file_group = group.add_argument_group()
+    subparsers = parser.add_subparsers()
+    file_group = subparsers.add_parser('file', help = 'file help')
+    file_group.add_argument(
+        '--file', '-f',
+        help='One file, instead of batch',
+        required = True
+        )
     file_group.add_argument(
         'sub_dir',
         help=(
@@ -89,24 +94,22 @@ def add_batch(parser: argparse.ArgumentParser):
             'excluding your save dir root'
             ),
         )
-    file_group.add_argument(
-        '--file', '-f',
-        help='One file, instead of batch'
-        )
+    batch_group = subparsers.add_parser('batch', help = 'batch help')
+    group = batch_group.add_mutually_exclusive_group(required = True)
     group.add_argument(
-        '--batch',
+        '--batch', '-b',
         action='store_const',
         const=1,
         help='Batch operation on one region and one slot'
         )
     group.add_argument(
-        '--batch-region',
+        '--batch-region', '-R',
         action='store_const',
         const=1,
         help='Batch operation on one region and both slots'
         )
     group.add_argument(
-        '--batch-all',
+        '--batch-all', '-A',
         action='store_const',
         const=1,
         help='Batch operation on all regions and both slots'
@@ -249,7 +252,7 @@ def check_file_exists(sub_dir: Path, file: Path):
         save_file = sub_dir / file
         if not save_file.exists():
             raise Exception(
-                f"""{save_file} doesn\'t exist.
+                f"""{save_file} doesn't exist.
                 Please check the filename and/or location.
                 """
                 )
@@ -272,9 +275,10 @@ if __name__ == '__main__':
     card_slot = f'Card {args.slot}'
     card_dir = base_dir / 'GC' / region / card_slot
     max_backup = conf['max_backup']
+    print(max_backup)
 
     try:
-        if args.batch_region or args.batch_all:
+        if args.batch or args.batch_region or args.batch_all:
             pass
         else:
             # Maybe find a more elegant solution later.
@@ -284,15 +288,16 @@ if __name__ == '__main__':
             print(f'{card_dir.name} doesn\'t exist! Creating...')
             card_dir.mkdir(parents=True)
 
-
     # If sub_dir is checked instead, there is a real possibility
     # of a regular save file being deleted via `unlink`. Plus,
     # the target of unlinking is the symlinked files.
-    if args.file and args.subcommand == 'unlink':
-        file = check_file_exists(card_dir, Path(args.file))
-    elif args.file:
-        file = check_file_exists(sub_dir, Path(args.file))
-    else:
+    try:
+        if args.file and args.subcommand == 'unlink':
+            file = check_file_exists(card_dir, Path(args.file))
+        else: # elif args.file:
+            file = check_file_exists(sub_dir, Path(args.file))
+    except AttributeError:
+        # fallback for batch operations
         file = None
 
     if args.subcommand == 'link':
@@ -318,7 +323,7 @@ if __name__ == '__main__':
 
     try:
         if args.batch:
-            batch.batch(function, card_dir)
+            batch.batch(function, card_dir, max_backup = max_backup)
         elif args.batch_region:
             batch.batch_region(
                 function, base_dir, region, max_backup=max_backup
