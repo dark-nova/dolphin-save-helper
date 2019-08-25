@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [1.1.1] - 2019-08-25
+### Added
+- [`manager.py`](manager.py) Added `add_file_args` to reduce lines (DRY)
+
 ### Changed
-- Use subcommand groups to differentiate between files and batch operations
+- [`manager.py`](manager.py) Use subcommand groups to differentiate between files and batch operations
+- [`manager.py`](manager.py) `add_batch` ➡ `add_batch_args`; consistent with `add_file_args`
+- [`manager.py`](manager.py) `add_batch_args` now returns `None` to be consistent with `add_file_args`
 
 ### Fixed
-- Syntax issue in [`batch.py`](batch.py)
-- `AttributeError`: handling batch operations with omitted `sub_dir`
+- [`batch.py`](batch.py) Syntax issue
+- [`manager.py`](manager.py) `AttributeError`: handling batch operations with omitted `sub_dir`
 
 ## [1.1] - 2019-08-12
 ### Added

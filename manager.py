@@ -9,6 +9,69 @@ import batch
 import link
 
 
+def add_file_args(parser: argparse.ArgumentParser):
+    """Add file args to command `parser`s.
+
+    Args:
+        parser (argparse.ArgumentParser): the parser to add the flags
+
+    Returns:
+        None
+
+    """
+    parser.add_argument(
+        'sub_dir',
+        help=(
+            'The sub directory containing .gci files, '
+            'excluding your save dir root'
+            ),
+        )
+    parser.add_argument(
+        '--file', '-f',
+        help='One file to restore'
+        )
+
+    return
+
+
+def add_batch_args(parser: argparse.ArgumentParser):
+    """Add batch arg flags to command `parser`s.
+
+    Args:
+        parser (argparse.ArgumentParser): the parser to add the flags
+
+    Returns:
+        None
+
+    """
+    subparsers = parser.add_subparsers()
+    file_group = subparsers.add_parser('file', help = 'file help')
+    add_file_args(file_group)
+
+    batch_group = subparsers.add_parser('batch', help = 'batch help')
+    group = batch_group.add_mutually_exclusive_group(required = True)
+    group.add_argument(
+        '--batch', '-b',
+        action='store_const',
+        const=1,
+        help='Batch operation on one region and one slot'
+        )
+    group.add_argument(
+        '--batch-region', '-R',
+        action='store_const',
+        const=1,
+        help='Batch operation on one region and both slots'
+        )
+    group.add_argument(
+        '--batch-all', '-A',
+        action='store_const',
+        const=1,
+        help='Batch operation on all regions and both slots'
+        )
+
+    return
+
+
 parser = argparse.ArgumentParser(
     description="""
         A simple save manager for Dolphin Emulator.
@@ -37,89 +100,21 @@ subparser = parser.add_subparsers(
     )
 
 parser_link = subparser.add_parser('link', help='link help')
-parser_link.add_argument(
-    'sub_dir',
-    help=(
-        'The sub directory containing .gci files, '
-        'excluding your save dir root'
-        ),
-    )
-parser_link.add_argument(
-    '--file', '-f',
-    help='One file to link'
-    )
+add_file_args(parser_link)
 
 parser_unlink = subparser.add_parser('unlink', help='unlink help')
+add_batch_args(parser_unlink)
 
 parser_backup = subparser.add_parser('backup', help='backup help')
+add_batch_args(parser_backup)
 
 parser_restore = subparser.add_parser('restore', help='restore help')
-parser_restore.add_argument(
-    'sub_dir',
-    help=(
-        'The sub directory containing .gci files, '
-        'excluding your save dir root'
-        ),
-    )
-parser_restore.add_argument(
-    '--file', '-f',
-    help='One file to restore'
-    )
+add_file_args(parser_restore)
 parser_restore.add_argument(
     '--number', '-n',
     help='Backup number to restore'
     )
 
-def add_batch(parser: argparse.ArgumentParser):
-    """Add batch flags to command `parser`s.
-
-    Args:
-        parser (argparse.ArgumentParser): the parser to add the flags
-
-    Returns:
-        bool: True
-
-    """
-    subparsers = parser.add_subparsers()
-    file_group = subparsers.add_parser('file', help = 'file help')
-    file_group.add_argument(
-        '--file', '-f',
-        help='One file, instead of batch',
-        required = True
-        )
-    file_group.add_argument(
-        'sub_dir',
-        help=(
-            'The sub directory containing .gci files, '
-            'excluding your save dir root'
-            ),
-        )
-    batch_group = subparsers.add_parser('batch', help = 'batch help')
-    group = batch_group.add_mutually_exclusive_group(required = True)
-    group.add_argument(
-        '--batch', '-b',
-        action='store_const',
-        const=1,
-        help='Batch operation on one region and one slot'
-        )
-    group.add_argument(
-        '--batch-region', '-R',
-        action='store_const',
-        const=1,
-        help='Batch operation on one region and both slots'
-        )
-    group.add_argument(
-        '--batch-all', '-A',
-        action='store_const',
-        const=1,
-        help='Batch operation on all regions and both slots'
-        )
-
-    return True
-
-
-add_batch(parser_unlink)
-add_batch(parser_backup)
 
 
 GCI_NUMBERS = re.compile(r'(_[0-9]{2})?\.gci', re.I)
