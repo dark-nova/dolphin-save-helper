@@ -241,9 +241,8 @@ def check_file_exists(sub_dir: Path, file: Path):
     """
 
     if file.resolve().parent != sub_dir:
-        if file in sub_dir:
-            file = sub_dir / Path
-        else:
+        file = sub_dir / file
+        if not file.exists():
             raise Exception(f'{file} isn\'t in {sub_dir}')
     if file.exists():
         return file
