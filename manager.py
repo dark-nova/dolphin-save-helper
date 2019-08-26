@@ -278,7 +278,7 @@ if __name__ == '__main__':
         else:
             # Maybe find a more elegant solution later.
             raise Exception
-    except Exception:
+    except (Exception, AttributeError):
         if not card_dir.exists():
             print(f'{card_dir.name} doesn\'t exist! Creating...')
             card_dir.mkdir(parents=True)
