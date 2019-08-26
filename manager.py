@@ -239,8 +239,12 @@ def check_file_exists(sub_dir: Path, file: Path):
         Exception: if save file doesn't exist or is in the wrong place
 
     """
+
     if file.resolve().parent != sub_dir:
-        raise Exception(f'{file} isn\'t in {sub_dir}')
+        if file in sub_dir:
+            file = sub_dir / Path
+        else:
+            raise Exception(f'{file} isn\'t in {sub_dir}')
     if file.exists():
         return file
     else:
