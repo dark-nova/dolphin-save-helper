@@ -265,20 +265,15 @@ if __name__ == '__main__':
         region = check_region(args.region)
     base_dir = convert_check_path(conf['base_dir'])
     save_dir = convert_check_path(conf['save_dir'])
-    if not (args.batch or args.batch_region or args.batch_all):
-        sub_dir = convert_check_path(save_dir / args.sub_dir)
     card_slot = f'Card {args.slot}'
     card_dir = base_dir / 'GC' / region / card_slot
     max_backup = conf['max_backup']
-    print(max_backup)
 
     try:
         if args.batch or args.batch_region or args.batch_all:
             pass
-        else:
-            # Maybe find a more elegant solution later.
-            raise Exception
-    except (Exception, AttributeError):
+    except AttributeError:
+        sub_dir = convert_check_path(save_dir / args.sub_dir)
         if not card_dir.exists():
             print(f'{card_dir.name} doesn\'t exist! Creating...')
             card_dir.mkdir(parents=True)
