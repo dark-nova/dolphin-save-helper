@@ -123,6 +123,15 @@ optional arguments:
 
 ⚠ Note that although this program attempts to manipulate files in a safe manner (using symlinks, for example), `restore` is a destructive procedure that overwrites the save file with the backup.
 
+## Requirements
+
+This code is designed around the following:
+
+- Python 3.6+
+- `PyYAML` for config
+
+⚠ Note that this setup has only been tested on Debian-like distros. Other \*nix derivatives should work fine, but no guarantees will be made. **Windows may work but will remain untested.**
+
 ## [Config](config.yaml.example)
 Examine the file:
 
